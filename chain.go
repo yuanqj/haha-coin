@@ -4,10 +4,6 @@ type Blockchain struct {
 	blocks []*Block
 }
 
-func NewGenesisBlock() *Block {
-	return NewBlock("Genesis Block", []byte{})
-}
-
 func NewBlockchain() *Blockchain {
 	return &Blockchain{blocks: []*Block{NewGenesisBlock()}}
 }
