@@ -35,7 +35,10 @@ func (pow *PoW) prepareData(nonce int) []byte {
 }
 
 func (pow *PoW) Run() (int, []byte) {
-	fmt.Printf("Mining the block containing \"%s\"\n", pow.block.Data)
+	fmt.Printf("\n>>>>>>> Mining...\n")
+	fmt.Printf("# Data: %s\n", pow.block.Data)
+	fmt.Printf("# PrevHash: %x\n", pow.block.PrevBlockHash)
+
 	var hashInt big.Int
 	var hash [32]byte
 	nonce := 0
@@ -49,6 +52,7 @@ func (pow *PoW) Run() (int, []byte) {
 		}
 		nonce++
 	}
+	fmt.Printf("# Hash: %x\n\n", hash)
 	return nonce, hash[:]
 }
 
