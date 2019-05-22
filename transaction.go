@@ -34,7 +34,7 @@ type TXOutputWraper struct {
 
 type TXInput struct {
 	TxID      TxIDType
-	Vout      int
+	OutIdx    int
 	ScriptSig string
 }
 
@@ -47,7 +47,7 @@ func (out *TXOutput) CanBeUnlockedWith(unlockingData string) bool {
 }
 
 func (tx *Transaction) IsCoinbase() bool {
-	return len(tx.Ins[0].TxID) == 0 && tx.Ins[0].Vout == -1
+	return len(tx.Ins[0].TxID) == 0 && tx.Ins[0].OutIdx == -1
 }
 
 func (tx *Transaction) SetID() error {
@@ -62,7 +62,7 @@ func (tx *Transaction) SetID() error {
 }
 
 func NewCoinbaseTransaction(to string) (*Transaction, error) {
-	txIn := TXInput{Vout: -1, ScriptSig: "Reward"}
+	txIn := TXInput{OutIdx: -1, ScriptSig: "Reward"}
 	txOut := TXOutput{subsidy, to}
 	tx := &Transaction{Ins: []TXInput{txIn}, Outs: []TXOutput{txOut}}
 	if err := tx.SetID(); err != nil {
@@ -73,12 +73,12 @@ func NewCoinbaseTransaction(to string) (*Transaction, error) {
 }
 
 func NewUTXOTransaction(from, to string, amt int, bc *Blockchain) (tx *Transaction, err error) {
-	utxos, tot, err := bc.FindUTXOs(from, amt)
+	utxos, tot, err := bc.UTXOs(from, amt)
 	if err != nil {
 		return
 	}
 	if tot < amt {
-		err = fmt.Errorf("not enough blance")
+		err = fmt.Errorf("no enough blance")
 		return
 	}
 
@@ -86,7 +86,7 @@ func NewUTXOTransaction(from, to string, amt int, bc *Blockchain) (tx *Transacti
 	ins := make([]TXInput, len(utxos))
 	for i, utxo := range utxos {
 		ins[i].TxID = utxo.Key.TxID
-		ins[i].Vout = utxo.Key.Idx
+		ins[i].OutIdx = utxo.Key.Idx
 		ins[i].ScriptSig = from
 	}
 

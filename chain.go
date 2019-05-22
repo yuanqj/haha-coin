@@ -159,7 +159,7 @@ func (bci *BlockchainIterator) Next() (*Block, error) {
 	return block, nil
 }
 
-func (bc *Blockchain) FindUTXOs(addr string, amt int) (utxos []*TXOutputWraper, tot int, err error) {
+func (bc *Blockchain) UTXOs(addr string, amt int) (utxos []*TXOutputWraper, tot int, err error) {
 	stxos := make(map[TXOutputKey]bool)
 	bci := bc.Iterator()
 
@@ -177,6 +177,9 @@ func (bc *Blockchain) FindUTXOs(addr string, amt int) (utxos []*TXOutputWraper, 
 		for _, tx := range block.Transactions {
 			// Outputs
 			for idx, out := range tx.Outs {
+				if !out.CanBeUnlockedWith(addr) {
+					continue
+				}
 				key := TXOutputKey{TxID: tx.ID, Idx: idx}
 				if !stxos[key] { // Unspent
 					utxo := &TXOutputWraper{Key: &key, Out: &out}
@@ -189,8 +192,14 @@ func (bc *Blockchain) FindUTXOs(addr string, amt int) (utxos []*TXOutputWraper, 
 			}
 
 			// Inputs
+			if tx.IsCoinbase() {
+				continue
+			}
 			for _, in := range tx.Ins {
-				key := TXOutputKey{TxID: tx.ID, Idx: in.Vout}
+				if !in.CanUnlockOutputWith(addr){
+					continue
+				}
+				key := TXOutputKey{TxID: in.TxID, Idx: in.OutIdx}
 				stxos[key] = true // Spent
 			}
 		}

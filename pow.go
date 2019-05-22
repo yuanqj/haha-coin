@@ -9,7 +9,7 @@ import (
 )
 
 const MaxNonce = math.MaxInt64
-const TargetBits uint = 13
+const TargetBits uint = 20
 
 type PoW struct {
 	block  *Block

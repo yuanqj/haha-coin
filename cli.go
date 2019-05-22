@@ -34,7 +34,7 @@ func (cli *CLI) getBalance(address string) {
 	}
 	defer bc.db.Close()
 
-	_, tot, err := bc.FindUTXOs(address, math.MaxInt64)
+	_, tot, err := bc.UTXOs(address, math.MaxInt64)
 	if err != nil {
 		fmt.Println("************* Error:")
 		fmt.Println(err)
