@@ -26,6 +26,7 @@ func (pow *PoW) prepareData(nonce int) []byte {
 		[][]byte{
 			pow.block.PrevBlockHash,
 			pow.block.Hash,
+			pow.block.HashTransactions(),
 			Int2Hex(pow.block.Timestamp),
 			Int2Hex(int64(TargetBits)),
 			Int2Hex(int64(nonce)),
