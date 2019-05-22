@@ -36,7 +36,6 @@ func (pow *PoW) prepareData(nonce int) []byte {
 
 func (pow *PoW) Run() (int, []byte) {
 	fmt.Printf("\n>>>>>>> Mining...\n")
-	fmt.Printf("# Data: %s\n", pow.block.Data)
 	fmt.Printf("# PrevHash: %x\n", pow.block.PrevBlockHash)
 
 	var hashInt big.Int

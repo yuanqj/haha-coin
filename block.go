@@ -9,20 +9,20 @@ import (
 type Block struct {
 	Timestamp           int64
 	PrevBlockHash, Hash []byte
-	Data                []byte
+	Transactions        []*Transaction
 	Nonce               int
 }
 
-func NewBlock(data string, prevBlockHash []byte) *Block {
-	block := &Block{Timestamp: time.Now().Unix(), PrevBlockHash: prevBlockHash, Data: []byte(data)}
+func NewBlock(txs []*Transaction, prevBlockHash []byte) *Block {
+	block := &Block{Timestamp: time.Now().Unix(), PrevBlockHash: prevBlockHash, Transactions: txs}
 	pow := NewPoW(block)
 	nonce, hash := pow.Run()
 	block.Hash, block.Nonce = hash[:], nonce
 	return block
 }
 
-func NewGenesisBlock() *Block {
-	return NewBlock("Genesis Block", []byte{})
+func NewGenesisBlock(coinbase *Transaction) *Block {
+	return NewBlock([]*Transaction{coinbase}, []byte{})
 }
 
 func (b *Block) Serialize() ([]byte, error) {
