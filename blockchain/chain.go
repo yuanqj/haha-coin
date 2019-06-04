@@ -35,6 +35,10 @@ func dbExists() bool {
 	return true
 }
 
+func (bc *Blockchain) Close() {
+	bc.db.Close()
+}
+
 func LoadBlockchain() (bc *Blockchain, err error) {
 	if !dbExists() {
 		return nil, fmt.Errorf("no existing blockchain found")

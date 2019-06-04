@@ -1,49 +1,13 @@
-package main
+package cli
 
 import (
-	"flag"
 	"fmt"
-	"log"
 	"os"
-	"strconv"
-	"math"
+	"flag"
+	"log"
 )
 
-// CLI responsible for processing command line arguments
 type CLI struct{}
-
-func (cli *CLI) createBlockchain(address string) {
-	bc, err := CreateBlockchain(address)
-	if err != nil {
-		fmt.Println("************* Error:")
-		fmt.Println(err)
-		return
-	}
-	defer bc.db.Close()
-
-	bc.db.Close()
-	fmt.Println("Done!")
-}
-
-func (cli *CLI) getBalance(address string) {
-	bc, err := LoadBlockchain()
-	if err != nil {
-		fmt.Println("************* Error:")
-		fmt.Println(err)
-		return
-	}
-	defer bc.db.Close()
-
-	_, tot, err := bc.UTXOs(address, math.MaxInt64)
-	if err != nil {
-		fmt.Println("************* Error:")
-		fmt.Println(err)
-		return
-	}
-	defer bc.db.Close()
-
-	fmt.Printf("Balance of '%s': %d\n", address, tot)
-}
 
 func (cli *CLI) printUsage() {
 	fmt.Println("Usage:")
@@ -59,62 +23,6 @@ func (cli *CLI) validateArgs() {
 		os.Exit(1)
 	}
 }
-
-func (cli *CLI) printChain() {
-	bc, err := LoadBlockchain()
-	if err != nil {
-		fmt.Println("************* Error:")
-		fmt.Println(err)
-		return
-	}
-	defer bc.db.Close()
-
-	bci := bc.Iterator()
-	for {
-		block, err := bci.Next()
-		if err != nil {
-			fmt.Println("************* Error:")
-			fmt.Println(err)
-			break
-		}
-		if block == nil {
-			break
-		}
-
-		fmt.Printf("PrevHash: %x\n", block.PrevBlockHash)
-		fmt.Printf("Hash: %x\n", block.Hash)
-		pow := NewPoW(block)
-		fmt.Printf("PoW: %s\n", strconv.FormatBool(pow.Validate()))
-		fmt.Println()
-	}
-}
-
-func (cli *CLI) send(from, to string, amount int) {
-	bc, err := LoadBlockchain()
-	if err != nil {
-		fmt.Println("************* Error:")
-		fmt.Println(err)
-		return
-	}
-	defer bc.db.Close()
-
-	tx, err := NewUTXOTransaction(from, to, amount, bc)
-	if err != nil {
-		fmt.Println("************* Error:")
-		fmt.Println(err)
-		return
-	}
-
-	err = bc.MineBlock([]*Transaction{tx})
-	if err != nil {
-		fmt.Println("************* Error:")
-		fmt.Println(err)
-		return
-	}
-	fmt.Println("Success!")
-}
-
-// Run parses command line arguments and processes commands
 func (cli *CLI) Run() {
 	cli.validateArgs()
 
