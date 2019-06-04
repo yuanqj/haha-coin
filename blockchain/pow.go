@@ -1,4 +1,4 @@
-package main
+package blockchain
 
 import (
 	"bytes"
@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math"
 	"math/big"
+	"haha/util"
 )
 
 const MaxNonce = math.MaxInt64
@@ -27,9 +28,9 @@ func (pow *PoW) prepareData(nonce int) []byte {
 			pow.block.PrevBlockHash,
 			pow.block.Hash,
 			pow.block.HashTransactions(),
-			Int2Hex(pow.block.Timestamp),
-			Int2Hex(int64(TargetBits)),
-			Int2Hex(int64(nonce)),
+			util.Int2Hex(pow.block.Timestamp),
+			util.Int2Hex(int64(TargetBits)),
+			util.Int2Hex(int64(nonce)),
 		},
 		[]byte{},
 	)

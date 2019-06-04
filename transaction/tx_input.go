@@ -1,6 +1,9 @@
-package main
+package transaction
 
-import "bytes"
+import (
+	"bytes"
+	"haha/wallet"
+)
 
 type TXInput struct {
 	TxID      *TxIDType
@@ -10,7 +13,7 @@ type TXInput struct {
 }
 
 func (in *TXInput) UsesKey(pubKeyHash []byte) (bool, error) {
-	lockingHash, err := HashPubKey(in.PubKey)
+	lockingHash, err := wallet.HashPubKey(in.PubKey)
 	if err != nil {
 		return false, err
 	}

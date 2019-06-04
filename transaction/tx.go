@@ -1,4 +1,4 @@
-package main
+package transaction
 
 import (
 	"bytes"
@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"math/big"
 	"strings"
+	"haha/wallet"
+	"haha/blockchain"
 )
 
 const subsidy = 10
@@ -59,8 +61,8 @@ func NewCoinbaseTransaction(to string) (*Transaction, error) {
 	}
 }
 
-func NewUTXOTransaction(from, to string, amt int, bc *Blockchain) (tx *Transaction, err error) {
-	ws, err := NewWallets()
+func NewUTXOTransaction(from, to string, amt int, bc *blockchain.Blockchain) (tx *Transaction, err error) {
+	ws, err := wallet.NewWallets()
 	if err != nil {
 		return nil, err
 	}
