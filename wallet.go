@@ -10,16 +10,11 @@ import (
 )
 
 const version = byte(0x00)
-const walletFile = "wallet.dat"
 const lenAddrChecksum = 4
 
 type Wallet struct {
 	PrvKey *ecdsa.PrivateKey
 	PubKey []byte
-}
-
-type Wallets struct {
-	Wallets map[string]*Wallet
 }
 
 func NewWallet() (*Wallet, error) {
