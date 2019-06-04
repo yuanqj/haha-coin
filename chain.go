@@ -4,6 +4,10 @@ import (
 	"fmt"
 	bolt "github.com/etcd-io/bbolt"
 	"os"
+	"crypto/ecdsa"
+	"log"
+	"encoding/hex"
+	"bytes"
 )
 
 const dbFile = "haha.db"
@@ -159,9 +163,14 @@ func (bci *BlockchainIterator) Next() (*Block, error) {
 	return block, nil
 }
 
-func (bc *Blockchain) UTXOs(addr string, amt int) (utxos []*TXOutputWraper, tot int, err error) {
+func (bc *Blockchain) UTXOs(w *Wallet, amt int) (utxos []*TXOutputWraper, tot int, err error) {
 	stxos := make(map[TXOutputKey]bool)
 	bci := bc.Iterator()
+
+	pubKeyHash, err := HashPubKey(w.PubKey)
+	if err != nil {
+		return nil, 0, err
+	}
 
 	Blocks:
 	for {
@@ -177,12 +186,12 @@ func (bc *Blockchain) UTXOs(addr string, amt int) (utxos []*TXOutputWraper, tot 
 		for _, tx := range block.Transactions {
 			// Outputs
 			for idx, out := range tx.Outs {
-				if !out.CanBeUnlockedWith(addr) {
+				if !out.IsLockedWithKey(pubKeyHash) {
 					continue
 				}
-				key := TXOutputKey{TxID: tx.ID, Idx: idx}
+				key := TXOutputKey{TxID: *tx.ID, Idx: idx}
 				if !stxos[key] { // Unspent
-					utxo := &TXOutputWraper{Key: &key, Out: &out}
+					utxo := &TXOutputWraper{Key: &key, Out: out}
 					utxos = append(utxos, utxo)
 					tot += out.Val
 				}
@@ -196,13 +205,59 @@ func (bc *Blockchain) UTXOs(addr string, amt int) (utxos []*TXOutputWraper, tot 
 				continue
 			}
 			for _, in := range tx.Ins {
-				if !in.CanUnlockOutputWith(addr){
+				use, err := in.UsesKey(pubKeyHash)
+				if err != nil {
+					return nil, 0, err
+				}
+				if !use{
 					continue
 				}
-				key := TXOutputKey{TxID: in.TxID, Idx: in.OutIdx}
+				key := TXOutputKey{TxID: *in.TxID, Idx: in.OutIdx}
 				stxos[key] = true // Spent
 			}
 		}
 	}
 	return
+}
+
+func (bc *Blockchain) FindTransaction(ID *TxIDType) (tx *Transaction, err error) {
+	bci := bc.Iterator()
+	for {
+		block, errBlock := bci.Next()
+		if errBlock != nil {
+			err = errBlock
+			break
+		}
+		if block == nil {
+			break
+		}
+
+		for _, tx := range block.Transactions {
+			if bytes.Compare(tx.ID[:], ID[:]) == 0 {
+				return tx, nil
+			}
+		}
+	}
+	return nil, fmt.Errorf("transaction not found")
+}
+
+func (bc *Blockchain) SignTransaction(tx *Transaction, prv *ecdsa.PrivateKey) (err error) {
+	prevTXs := make([]*Transaction, len(tx.Ins))
+	for i, in := range tx.Ins {
+		if prevTXs[i], err = bc.FindTransaction(in.TxID); err != nil {
+			return
+		}
+	}
+	tx.Sign(prv, prevTXs)
+	return
+}
+
+func (bc *Blockchain) VerifyTransaction(tx *Transaction) (valid bool, err error) {
+	prevTXs := make([]*Transaction, len(tx.Ins))
+	for i, in := range tx.Ins {
+		if prevTXs[i], err = bc.FindTransaction(in.TxID); err != nil {
+			return
+		}
+	}
+	return tx.Verify(prevTXs)
 }
