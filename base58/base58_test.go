@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"haha/base58"
 	"testing"
+	"bytes"
 )
 
 var pairs = []struct {
@@ -35,8 +36,12 @@ func TestEncode(t *testing.T) {
 func TestDecode(t *testing.T) {
 	for _, pair := range pairs {
 		raw, _ := hex.DecodeString(pair.hex)
-		if res := base58.Encode(raw); res != pair.b58 {
-			t.Errorf(`decode error: \nb58="%s"\nraw="%s"\nres="%s"`, pair.b58, pair.hex, res)
+		res, err := base58.Decode(pair.b58)
+		if err != nil {
+			t.Errorf(`decode error: b58="%s", raw="%s", res="%s", err=%s`, pair.b58, pair.hex, res, err)
+		}
+		if bytes.Compare(res, raw) != 0 {
+			t.Errorf(`decode error: b58="%s", raw="%s", res="%s"`, pair.b58, pair.hex, hex.EncodeToString(res))
 		}
 	}
 }

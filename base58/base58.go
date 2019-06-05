@@ -61,8 +61,8 @@ func Decode(encoded string) (raw []byte, err error) {
 		}
 	}
 
-	raw = make([]byte, n.BitLen()/8+zc)
-	copy(raw[zc:], n.Bytes())
+	raw = make([]byte, zc, n.BitLen()/8+zc)
+	raw = append(raw, n.Bytes()...)
 	return raw, nil
 }
 
