@@ -11,7 +11,7 @@ import (
 const walletFile = "wallet.dat"
 
 type Wallets struct {
-	wallets map[string]*Wallet
+	Wallets map[string]*Wallet
 }
 
 func NewWallets() (*Wallets, error) {
@@ -31,20 +31,20 @@ func (ws *Wallets) CreateWallet() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	ws.wallets[addr] = w
+	ws.Wallets[addr] = w
 	return addr, nil
 }
 
 func (ws *Wallets) GetAddrs() []string {
-	addrs := make([]string, 0, len(ws.wallets))
-	for addr := range ws.wallets {
+	addrs := make([]string, 0, len(ws.Wallets))
+	for addr := range ws.Wallets {
 		addrs = append(addrs, addr)
 	}
 	return addrs
 }
 
 func (ws *Wallets) GetWallet(addr string) *Wallet {
-	return ws.wallets[addr]
+	return ws.Wallets[addr]
 }
 
 func (ws *Wallets) Save() error {
@@ -58,7 +58,9 @@ func (ws *Wallets) Save() error {
 }
 
 func (ws *Wallets) Load() error {
-	if _, err := os.Stat(walletFile); err != nil {
+	if _, err := os.Stat(walletFile); os.IsNotExist(err) {
+		return nil
+	} else if err != nil {
 		return err
 	}
 	cont, err := ioutil.ReadFile(walletFile)

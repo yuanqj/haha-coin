@@ -1,18 +1,20 @@
 package cli
 
 import (
-	"fmt"
-	"os"
 	"flag"
+	"fmt"
 	"log"
+	"os"
 )
 
 type CLI struct{}
 
 func (cli *CLI) printUsage() {
 	fmt.Println("Usage:")
-	fmt.Println("  balance -addr ADDRESS - Get balance of ADDRESS")
 	fmt.Println("  init -addr ADDRESS - Create a blockchain and send genesis block reward to ADDRESS")
+	fmt.Println("  wallet - Generates a new key-pair and saves it into the wallet file")
+	fmt.Println("  balance -addr ADDRESS - Get balance of ADDRESS")
+	fmt.Println("  addrs - Lists all addresses from the wallet file")
 	fmt.Println("  print - Print all the blocks of the blockchain")
 	fmt.Println("  send -from FROM -to TO -amt AMOUNT - Send AMOUNT of coins from FROM address to TO")
 }
@@ -30,6 +32,8 @@ func (cli *CLI) Run() {
 	createBlockchainCmd := flag.NewFlagSet("init", flag.ExitOnError)
 	sendCmd := flag.NewFlagSet("send", flag.ExitOnError)
 	printChainCmd := flag.NewFlagSet("print", flag.ExitOnError)
+	createWalletCmd := flag.NewFlagSet("wallet", flag.ExitOnError)
+	listAddressesCmd := flag.NewFlagSet("addrs", flag.ExitOnError)
 
 	getBalanceAddress := getBalanceCmd.String("addr", "", "The address to get balance for")
 	createBlockchainAddress := createBlockchainCmd.String("addr", "", "The address to send genesis block reward to")
@@ -55,6 +59,16 @@ func (cli *CLI) Run() {
 		}
 	case "send":
 		err := sendCmd.Parse(os.Args[2:])
+		if err != nil {
+			log.Panic(err)
+		}
+	case "addrs":
+		err := listAddressesCmd.Parse(os.Args[2:])
+		if err != nil {
+			log.Panic(err)
+		}
+	case "wallet":
+		err := createWalletCmd.Parse(os.Args[2:])
 		if err != nil {
 			log.Panic(err)
 		}
@@ -90,5 +104,13 @@ func (cli *CLI) Run() {
 		}
 
 		cli.send(*sendFrom, *sendTo, *sendAmount)
+	}
+
+	if listAddressesCmd.Parsed() {
+		cli.listAddrs()
+	}
+
+	if createWalletCmd.Parsed() {
+		cli.createWallet()
 	}
 }

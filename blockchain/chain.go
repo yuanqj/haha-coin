@@ -23,11 +23,6 @@ type Blockchain struct {
 	tip []byte
 }
 
-type BlockchainIterator struct {
-	currHash []byte
-	db       *bolt.DB
-}
-
 func dbExists() bool {
 	if _, err := os.Stat(dbFile); os.IsNotExist(err) {
 		return false
@@ -144,27 +139,6 @@ func (bc *Blockchain) MineBlock(txs []*transaction.Transaction) (err error) {
 
 func (bc *Blockchain) Iterator() *BlockchainIterator {
 	return &BlockchainIterator{currHash: bc.tip, db: bc.db}
-}
-
-func (bci *BlockchainIterator) Next() (*Block, error) {
-	if len(bci.currHash) <= 0 {
-		return nil, nil
-	}
-	var block *Block
-	err := bci.db.View(
-		func(tx *bolt.Tx) error {
-			bucket := tx.Bucket(bucketBlocks)
-			encodedBlock := bucket.Get(bci.currHash)
-			var err error
-			block, err = DeserializeBlock(encodedBlock)
-			return err
-		},
-	)
-	if err != nil {
-		return nil, err
-	}
-	bci.currHash = block.PrevBlockHash
-	return block, nil
 }
 
 func (bc *Blockchain) UTXOs(w *wallet.Wallet, amt int) (utxos []*transaction.TXOutputWraper, tot int, err error) {

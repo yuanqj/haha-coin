@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"haha/blockchain"
 	"haha/transaction"
+	"haha/wallet"
 )
 
-func (cli *CLI) send(from, to string, amount int) {
+func (cli *CLI) send(from, to string, amt int) {
 	bc, err := blockchain.LoadBlockchain()
 	if err != nil {
 		fmt.Println("************* Error:")
@@ -15,7 +16,20 @@ func (cli *CLI) send(from, to string, amount int) {
 	}
 	defer bc.Close()
 
-	tx, err := transaction.NewUTXOTransaction(from, to, amount, bc)
+	ws, err := wallet.NewWallets()
+	if err != nil {
+		fmt.Println("************* Error:")
+		fmt.Println(err)
+		return
+	}
+	utxos, _, err := bc.UTXOs(ws.GetWallet(from), amt)
+	if err != nil {
+		fmt.Println("************* Error:")
+		fmt.Println(err)
+		return
+	}
+
+	tx, err := transaction.NewUTXOTransaction(from, to, amt, utxos)
 	if err != nil {
 		fmt.Println("************* Error:")
 		fmt.Println(err)

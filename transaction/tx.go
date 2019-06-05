@@ -8,10 +8,9 @@ import (
 	"crypto/sha256"
 	"encoding/gob"
 	"fmt"
+	"haha/wallet"
 	"math/big"
 	"strings"
-	"haha/wallet"
-	"haha/blockchain"
 )
 
 const subsidy = 10
@@ -61,20 +60,21 @@ func NewCoinbaseTransaction(to string) (*Transaction, error) {
 	}
 }
 
-func NewUTXOTransaction(from, to string, amt int, bc *blockchain.Blockchain) (tx *Transaction, err error) {
-	ws, err := wallet.NewWallets()
-	if err != nil {
-		return nil, err
-	}
-	w := ws.GetWallet(from)
-	utxos, tot, err := bc.UTXOs(w, amt)
-	if err != nil {
-		return
+func NewUTXOTransaction(from, to string, amt int, utxos []*TXOutputWraper) (tx *Transaction, err error) {
+	tot := 0
+	for _, utxo := range utxos {
+		tot += utxo.Out.Val
 	}
 	if tot < amt {
 		err = fmt.Errorf("no enough blance")
 		return
 	}
+
+	ws, err := wallet.NewWallets()
+	if err != nil {
+		return nil, err
+	}
+	w := ws.GetWallet(from)
 
 	// Inputs
 	ins := make([]*TXInput, len(utxos))
@@ -177,7 +177,7 @@ func (tx *Transaction) Verify(prevTXs []*Transaction) (bool, error) {
 		x.SetBytes(in.PubKey[:lenKey/2])
 		y.SetBytes(in.PubKey[lenKey/2:])
 		pubKeyRaw := &ecdsa.PublicKey{Curve: c, X: x, Y: y}
-		if ecdsa.Verify(pubKeyRaw, trimmed.ID[:], r, s) {
+		if !ecdsa.Verify(pubKeyRaw, trimmed.ID[:], r, s) {
 			return false, nil
 		}
 	}

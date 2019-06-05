@@ -4,9 +4,20 @@ import (
 	"fmt"
 	"math"
 	"haha/blockchain"
+	"haha/wallet"
 )
 
-func (cli *CLI) getBalance(address string) {
+func (cli *CLI) getBalance(addr string) {
+	valid, err := wallet.ValidateAddr(addr)
+	if err != nil {
+		fmt.Println("************* Error:")
+		fmt.Println(err)
+		return
+	}
+	if !valid {
+		fmt.Println("************* ERROR: Address is invalid")
+		return
+	}
 	bc, err := blockchain.LoadBlockchain()
 	if err != nil {
 		fmt.Println("************* Error:")
@@ -15,7 +26,14 @@ func (cli *CLI) getBalance(address string) {
 	}
 	defer bc.Close()
 
-	_, tot, err := bc.UTXOs(address, math.MaxInt64)
+	ws, err := wallet.NewWallets()
+	if err != nil {
+		fmt.Println("************* Error:")
+		fmt.Println(err)
+		return
+	}
+
+	_, tot, err := bc.UTXOs(ws.GetWallet(addr), math.MaxInt64)
 	if err != nil {
 		fmt.Println("************* Error:")
 		fmt.Println(err)
@@ -23,5 +41,5 @@ func (cli *CLI) getBalance(address string) {
 	}
 	defer bc.Close()
 
-	fmt.Printf("Balance of '%s': %d\n", address, tot)
+	fmt.Printf("Balance of '%s': %d\n", addr, tot)
 }
