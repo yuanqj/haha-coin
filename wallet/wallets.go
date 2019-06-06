@@ -27,12 +27,8 @@ func (ws *Wallets) CreateWallet() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	addr, err := w.GetAddr()
-	if err != nil {
-		return "", err
-	}
-	ws.Wallets[addr] = w
-	return addr, nil
+	ws.Wallets[w.Addr] = w
+	return w.Addr, nil
 }
 
 func (ws *Wallets) GetAddrs() []string {

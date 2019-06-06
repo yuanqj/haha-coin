@@ -1,21 +1,19 @@
 package wallet
 
 import (
-	"bytes"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/sha256"
 	"golang.org/x/crypto/ripemd160"
-	"haha/base58"
 )
 
 const version = byte(0x00)
-const lenAddrChecksum = 4
 
 type Wallet struct {
 	PrvKey *ecdsa.PrivateKey
 	PubKey []byte
+	Addr   string
 }
 
 func NewWallet() (*Wallet, error) {
@@ -23,21 +21,11 @@ func NewWallet() (*Wallet, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Wallet{prv, pub}, nil
-}
-
-func (w *Wallet) GetAddr() (addr string, err error) {
-	pubKeyHash, err := HashPubKey(w.PubKey)
+	pubKeyHash, err := HashPubKey(pub)
 	if err != nil {
-		return
+		return nil, err
 	}
-
-	cont := make([]byte, 0, 1+len(pubKeyHash)+lenAddrChecksum)
-	cont = append(cont, version)
-	cont = append(cont, pubKeyHash...)
-	checksum := checksum(cont)
-	cont = append(cont, checksum...)
-	return base58.Encode(cont), nil
+	return &Wallet{PrvKey: prv, PubKey: pub, Addr: NewAddr(version, pubKeyHash).String()}, nil
 }
 
 func HashPubKey(key []byte) ([]byte, error) {
@@ -61,21 +49,4 @@ func genKeyPair() (prv *ecdsa.PrivateKey, pub []byte, err error) {
 	copy(pub[32-len(x):], x)
 	copy(pub[64-len(x):], y)
 	return
-}
-
-func checksum(payload []byte) []byte {
-	sum := sha256.Sum256(payload)
-	sum = sha256.Sum256(sum[:])
-	return sum[:lenAddrChecksum]
-}
-
-func ValidateAddr(addr string) (bool, error) {
-	pubKeyHash, err := base58.Decode(addr)
-	if err != nil {
-		return false, err
-	}
-	actualChecksum := pubKeyHash[len(pubKeyHash)-lenAddrChecksum:]
-	targetChecksum := checksum(pubKeyHash[:len(pubKeyHash)-lenAddrChecksum])
-
-	return bytes.Compare(actualChecksum, targetChecksum) == 0, nil
 }

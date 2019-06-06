@@ -60,7 +60,7 @@ func NewCoinbaseTransaction(to string) (*Transaction, error) {
 	}
 }
 
-func NewUTXOTransaction(from, to string, amt int, utxos []*TXOutputWraper) (tx *Transaction, err error) {
+func NewUTXOTransaction(fromWallet *wallet.Wallet, toAddr string, amt int, utxos []*TXOutputWraper) (tx *Transaction, err error) {
 	tot := 0
 	for _, utxo := range utxos {
 		tot += utxo.Out.Val
@@ -70,25 +70,19 @@ func NewUTXOTransaction(from, to string, amt int, utxos []*TXOutputWraper) (tx *
 		return
 	}
 
-	ws, err := wallet.NewWallets()
-	if err != nil {
-		return nil, err
-	}
-	w := ws.GetWallet(from)
-
 	// Inputs
 	ins := make([]*TXInput, len(utxos))
 	for i, utxo := range utxos {
-		ins[i] = &TXInput{TxID: &utxo.Key.TxID, OutIdx: utxo.Key.Idx, PubKey: w.PubKey}
+		ins[i] = &TXInput{TxID: &utxo.Key.TxID, OutIdx: utxo.Key.Idx, PubKey: fromWallet.PubKey}
 	}
 
 	// Outputs
 	outs := make([]*TXOutput, 2)
-	if outs[0], err = NewTXOutput(amt, to); err != nil {
+	if outs[0], err = NewTXOutput(amt, toAddr); err != nil {
 		return
 	}
 	if left := tot - amt; left > 0 {
-		if outs[1], err = NewTXOutput(left, from); err != nil {
+		if outs[1], err = NewTXOutput(left, fromWallet.Addr); err != nil {
 			return
 		}
 	} else {

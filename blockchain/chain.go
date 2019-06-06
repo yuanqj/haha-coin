@@ -141,14 +141,15 @@ func (bc *Blockchain) Iterator() *BlockchainIterator {
 	return &BlockchainIterator{currHash: bc.tip, db: bc.db}
 }
 
-func (bc *Blockchain) UTXOs(w *wallet.Wallet, amt int) (utxos []*transaction.TXOutputWraper, tot int, err error) {
+func (bc *Blockchain) UTXOs(addr string, amt int) (utxos []*transaction.TXOutputWraper, tot int, err error) {
 	stxos := make(map[transaction.TXOutputKey]bool)
 	bci := bc.Iterator()
 
-	pubKeyHash, err := wallet.HashPubKey(w.PubKey)
+	addrObj, err := wallet.DecodeAddr(addr)
 	if err != nil {
-		return nil, 0, err
+		return
 	}
+	pubKeyHash := addrObj.PubKeyHash()
 
 Blocks:
 	for {

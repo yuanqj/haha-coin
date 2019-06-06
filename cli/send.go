@@ -22,14 +22,20 @@ func (cli *CLI) send(from, to string, amt int) {
 		fmt.Println(err)
 		return
 	}
-	utxos, _, err := bc.UTXOs(ws.GetWallet(from), amt)
+	w := ws.Wallets[from]
+	if w == nil {
+		fmt.Println("************* Error:")
+		fmt.Printf("given address not found in wallets: '%s'\n", from)
+		return
+	}
+	utxos, _, err := bc.UTXOs(from, amt)
 	if err != nil {
 		fmt.Println("************* Error:")
 		fmt.Println(err)
 		return
 	}
 
-	tx, err := transaction.NewUTXOTransaction(from, to, amt, utxos)
+	tx, err := transaction.NewUTXOTransaction(w, to, amt, utxos)
 	if err != nil {
 		fmt.Println("************* Error:")
 		fmt.Println(err)

@@ -2,20 +2,16 @@ package cli
 
 import (
 	"fmt"
-	"math"
 	"haha/blockchain"
 	"haha/wallet"
+	"math"
 )
 
 func (cli *CLI) getBalance(addr string) {
-	valid, err := wallet.ValidateAddr(addr)
+	_, err := wallet.DecodeAddr(addr)
 	if err != nil {
 		fmt.Println("************* Error:")
 		fmt.Println(err)
-		return
-	}
-	if !valid {
-		fmt.Println("************* ERROR: Address is invalid")
 		return
 	}
 	bc, err := blockchain.LoadBlockchain()
@@ -26,14 +22,7 @@ func (cli *CLI) getBalance(addr string) {
 	}
 	defer bc.Close()
 
-	ws, err := wallet.NewWallets()
-	if err != nil {
-		fmt.Println("************* Error:")
-		fmt.Println(err)
-		return
-	}
-
-	_, tot, err := bc.UTXOs(ws.GetWallet(addr), math.MaxInt64)
+	_, tot, err := bc.UTXOs(addr, math.MaxInt64)
 	if err != nil {
 		fmt.Println("************* Error:")
 		fmt.Println(err)
