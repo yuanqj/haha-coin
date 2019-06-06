@@ -28,7 +28,6 @@ func balance(addr string) {
 		fmt.Println(err)
 		return
 	}
-	defer bc.Close()
 
 	fmt.Printf("Balance of '%s': %d\n", addr, tot)
 }
