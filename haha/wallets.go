@@ -1,19 +1,19 @@
-package cli
+package haha
 
 import (
-	"log"
 	"fmt"
 	"haha/wallet"
+	"log"
 )
 
-func (cli *CLI) listAddrs() {
+func wallets() {
 	wallets, err := wallet.NewWallets()
 	if err != nil {
 		log.Panic(err)
 	}
-	addresses := wallets.GetAddrs()
+	addr := wallets.GetAddrs()
 
-	for _, address := range addresses {
+	for _, address := range addr {
 		fmt.Println(address)
 	}
 }

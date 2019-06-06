@@ -1,18 +1,18 @@
-package cli
+package haha
 
 import (
 	"fmt"
 	"haha/wallet"
 )
 
-func (cli *CLI) createWallet() {
+func add() {
 	wallets, _ := wallet.NewWallets()
 	address, err := wallets.CreateWallet()
 	if err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return
 	}
-	if err:= wallets.Save(); err != nil {
+	if err := wallets.Save(); err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return
 	}

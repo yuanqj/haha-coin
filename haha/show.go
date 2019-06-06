@@ -1,12 +1,12 @@
-package cli
+package haha
 
 import (
 	"fmt"
-	"strconv"
 	"haha/blockchain"
+	"strconv"
 )
 
-func (cli *CLI) printChain() {
+func show() {
 	bc, err := blockchain.LoadBlockchain()
 	if err != nil {
 		fmt.Println("************* Error:")
@@ -34,4 +34,3 @@ func (cli *CLI) printChain() {
 		fmt.Println()
 	}
 }
-

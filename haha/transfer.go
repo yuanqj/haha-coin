@@ -1,4 +1,4 @@
-package cli
+package haha
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"haha/wallet"
 )
 
-func (cli *CLI) send(from, to string, amt int) {
+func transfer(src, dst string, amt int) {
 	bc, err := blockchain.LoadBlockchain()
 	if err != nil {
 		fmt.Println("************* Error:")
@@ -22,20 +22,20 @@ func (cli *CLI) send(from, to string, amt int) {
 		fmt.Println(err)
 		return
 	}
-	w := ws.Wallets[from]
+	w := ws.Wallets[src]
 	if w == nil {
 		fmt.Println("************* Error:")
-		fmt.Printf("given address not found in wallets: '%s'\n", from)
+		fmt.Printf("given address not found in wallets: '%s'\n", src)
 		return
 	}
-	utxos, _, err := bc.UTXOs(from, amt)
+	utxos, _, err := bc.UTXOs(src, amt)
 	if err != nil {
 		fmt.Println("************* Error:")
 		fmt.Println(err)
 		return
 	}
 
-	tx, err := transaction.NewUTXOTransaction(w, to, amt, utxos)
+	tx, err := transaction.NewUTXOTransaction(w, dst, amt, utxos)
 	if err != nil {
 		fmt.Println("************* Error:")
 		fmt.Println(err)

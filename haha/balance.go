@@ -1,4 +1,4 @@
-package cli
+package haha
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"math"
 )
 
-func (cli *CLI) getBalance(addr string) {
+func balance(addr string) {
 	_, err := wallet.DecodeAddr(addr)
 	if err != nil {
 		fmt.Println("************* Error:")

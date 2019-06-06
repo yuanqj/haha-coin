@@ -1,12 +1,12 @@
-package cli
+package haha
 
 import (
 	"fmt"
 	"haha/blockchain"
 )
 
-func (cli *CLI) createBlockchain(address string) {
-	bc, err := blockchain.CreateBlockchain(address)
+func initBlockchain(addr string) {
+	bc, err := blockchain.CreateBlockchain(addr)
 	if err != nil {
 		fmt.Println("************* Error:")
 		fmt.Println(err)

@@ -1,9 +1,7 @@
 package main
 
-import (
-	"haha/cli"
-)
+import "haha/haha"
 
 func main() {
-	(&cli.CLI{}).Run()
+	haha.Run()
 }
