@@ -4,22 +4,21 @@ import (
 	"fmt"
 	"haha/blockchain"
 	"haha/wallet"
-	"log"
 	"math"
 )
 
 func wallets() {
 	bc, err := blockchain.LoadBlockchain()
 	if err != nil {
-		fmt.Println("************* Error:")
-		fmt.Println(err)
+		showError(err)
 		return
 	}
 	defer bc.Close()
 
 	wallets, err := wallet.NewWallets()
 	if err != nil {
-		log.Panic(err)
+		showError(err)
+		return
 	}
 	addrs := wallets.GetAddrs()
 
@@ -27,8 +26,7 @@ func wallets() {
 	for i, addr := range addrs {
 		_, tot, err := bc.UTXOs(addr, math.MaxInt64)
 		if err != nil {
-			fmt.Println("************* Error:")
-			fmt.Println(err)
+			showError(err)
 			return
 		}
 		amts[i] = tot

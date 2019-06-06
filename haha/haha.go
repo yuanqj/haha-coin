@@ -2,6 +2,7 @@ package haha
 
 import (
 	"github.com/spf13/cobra"
+	"fmt"
 )
 
 func Run() {
@@ -70,14 +71,19 @@ func Run() {
 			transfer(cmdTransferSrc, cmdTransferDst, cmdTransferAmt)
 		},
 	}
-	cmdBalance.Flags().StringVarP(&cmdTransferSrc, "src", "", "", "source wallet address")
-	cmdBalance.Flags().StringVarP(&cmdTransferDst, "dst", "", "", "destination wallet address")
-	cmdBalance.Flags().IntVarP(&cmdTransferAmt, "amt", "", 0, "amount of balance to transfer")
-	cmdBalance.MarkFlagRequired("src")
-	cmdBalance.MarkFlagRequired("dst")
-	cmdBalance.MarkFlagRequired("amt")
+	cmdTransfer.Flags().StringVarP(&cmdTransferSrc, "src", "", "", "source wallet address")
+	cmdTransfer.Flags().StringVarP(&cmdTransferDst, "dst", "", "", "destination wallet address")
+	cmdTransfer.Flags().IntVarP(&cmdTransferAmt, "amt", "", 0, "amount of balance to transfer")
+	cmdTransfer.MarkFlagRequired("src")
+	cmdTransfer.MarkFlagRequired("dst")
+	cmdTransfer.MarkFlagRequired("amt")
 
 	var haha = &cobra.Command{Use: "haha"}
 	haha.AddCommand(cmdAdd, cmdWallets, cmdInit, cmdShow, cmdBalance, cmdTransfer)
 	haha.Execute()
+}
+
+func showError(err error) {
+	fmt.Println("************* Error:")
+	fmt.Println(err)
 }

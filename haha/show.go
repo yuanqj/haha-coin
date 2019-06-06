@@ -9,8 +9,7 @@ import (
 func show() {
 	bc, err := blockchain.LoadBlockchain()
 	if err != nil {
-		fmt.Println("************* Error:")
-		fmt.Println(err)
+		showError(err)
 		return
 	}
 	defer bc.Close()
@@ -19,8 +18,7 @@ func show() {
 	for {
 		block, err := bci.Next()
 		if err != nil {
-			fmt.Println("************* Error:")
-			fmt.Println(err)
+			showError(err)
 			break
 		}
 		if block == nil {
