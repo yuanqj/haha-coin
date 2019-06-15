@@ -5,7 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/gob"
 	"time"
-	"haha/transaction"
+	"github.com/yuanqj/haha-coin/transaction"
 )
 
 type Block struct {

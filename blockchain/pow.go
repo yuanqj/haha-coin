@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"math"
 	"math/big"
-	"haha/util"
+	"github.com/yuanqj/haha-coin/util"
 )
 
 const MaxNonce = math.MaxInt64

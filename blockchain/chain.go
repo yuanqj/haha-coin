@@ -5,8 +5,8 @@ import (
 	"crypto/ecdsa"
 	"fmt"
 	bolt "github.com/etcd-io/bbolt"
-	"haha/transaction"
-	"haha/wallet"
+	"github.com/yuanqj/haha-coin/transaction"
+	"github.com/yuanqj/haha-coin/wallet"
 	"os"
 )
 

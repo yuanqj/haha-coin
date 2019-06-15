@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"fmt"
-	"haha/base58"
+	"github.com/yuanqj/haha-coin/base58"
 )
 
 const lenAddrChecksum = 4

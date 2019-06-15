@@ -2,7 +2,7 @@ package base58_test
 
 import (
 	"encoding/hex"
-	"haha/base58"
+	"github.com/yuanqj/haha-coin/base58"
 	"testing"
 	"bytes"
 )

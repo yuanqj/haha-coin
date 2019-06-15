@@ -2,7 +2,7 @@ package transaction
 
 import (
 	"bytes"
-	"haha/wallet"
+	"github.com/yuanqj/haha-coin/wallet"
 )
 
 type TXInput struct {

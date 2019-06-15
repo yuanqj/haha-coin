@@ -8,7 +8,7 @@ import (
 	"crypto/sha256"
 	"encoding/gob"
 	"fmt"
-	"haha/wallet"
+	"github.com/yuanqj/haha-coin/wallet"
 	"math/big"
 	"strings"
 )

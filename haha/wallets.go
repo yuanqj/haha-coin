@@ -2,8 +2,8 @@ package haha
 
 import (
 	"fmt"
-	"haha/blockchain"
-	"haha/wallet"
+	"github.com/yuanqj/haha-coin/blockchain"
+	"github.com/yuanqj/haha-coin/wallet"
 	"math"
 )
 

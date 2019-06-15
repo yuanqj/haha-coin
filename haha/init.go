@@ -1,7 +1,7 @@
 package haha
 
 import (
-	"haha/blockchain"
+	"github.com/yuanqj/haha-coin/blockchain"
 )
 
 func initBlockchain(addr string) {

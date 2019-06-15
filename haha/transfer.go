@@ -2,9 +2,9 @@ package haha
 
 import (
 	"fmt"
-	"haha/blockchain"
-	"haha/transaction"
-	"haha/wallet"
+	"github.com/yuanqj/haha-coin/blockchain"
+	"github.com/yuanqj/haha-coin/transaction"
+	"github.com/yuanqj/haha-coin/wallet"
 )
 
 func transfer(src, dst string, amt int) {

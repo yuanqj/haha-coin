@@ -2,7 +2,7 @@ package haha
 
 import (
 	"fmt"
-	"haha/blockchain"
+	"github.com/yuanqj/haha-coin/blockchain"
 	"strconv"
 )
 

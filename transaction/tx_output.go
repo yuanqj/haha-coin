@@ -2,7 +2,7 @@ package transaction
 
 import (
 	"bytes"
-	"haha/base58"
+	"github.com/yuanqj/haha-coin/base58"
 )
 
 type TXOutput struct {

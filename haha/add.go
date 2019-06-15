@@ -2,7 +2,7 @@ package haha
 
 import (
 	"fmt"
-	"haha/wallet"
+	"github.com/yuanqj/haha-coin/wallet"
 )
 
 func add() {
