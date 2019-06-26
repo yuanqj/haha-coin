@@ -30,7 +30,6 @@ func (pow *PoW) prepareData(nonce int) []byte {
 	return bytes.Join(
 		[][]byte{
 			pow.block.PrevBlockHash,
-			pow.block.Hash,
 			pow.block.HashTransactions(),
 			util.Int2Hex(pow.block.Timestamp),
 			util.Int2Hex(int64(TargetBits)),
@@ -60,7 +59,7 @@ func (pow *PoW) Run() (int, []byte) {
 
 func (pow *PoW) Validate() bool {
 	var val big.Int
-	hash := pow.hash(pow.block.Nonce, &val)
+	pow.hash(pow.block.Nonce, &val)
 	return val.Cmp(pow.target) == -1
 }
 

@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/gob"
-	"time"
 	"github.com/yuanqj/haha-coin/transaction"
+	"time"
 )
 
 type Block struct {
@@ -18,8 +18,7 @@ type Block struct {
 func NewBlock(txs []*transaction.Transaction, prevBlockHash []byte) *Block {
 	block := &Block{Timestamp: time.Now().Unix(), PrevBlockHash: prevBlockHash, Transactions: txs}
 	pow := NewPoW(block)
-	nonce, hash := pow.Run()
-	block.Hash, block.Nonce = hash[:], nonce
+	block.Nonce, block.Hash = pow.Run()
 	return block
 }
 
