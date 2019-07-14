@@ -2,8 +2,8 @@ package blockchain
 
 import (
 	"bytes"
-	"crypto/sha256"
 	"encoding/gob"
+	"github.com/yuanqj/haha-coin/merkle"
 	"github.com/yuanqj/haha-coin/transaction"
 	"time"
 )
@@ -27,12 +27,12 @@ func NewGenesisBlock(coinbase *transaction.Transaction) *Block {
 }
 
 func (b *Block) HashTransactions() []byte {
-	var txHashes [][]byte
+	txHashes := make([][]byte, 0, len(b.Transactions))
 	for _, tx := range b.Transactions {
 		txHashes = append(txHashes, tx.ID[:])
 	}
-	txHash := sha256.Sum256(bytes.Join(txHashes, []byte{}))
-	return txHash[:]
+	tree := merkle.NewTree(txHashes)
+	return tree.Root.Hash[:]
 }
 
 func (b *Block) Serialize() ([]byte, error) {
