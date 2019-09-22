@@ -137,8 +137,8 @@ func (bc *Blockchain) MineBlock(txs []*transaction.Transaction) (err error) {
 	return
 }
 
-func (bc *Blockchain) Iterator() *BlockchainIterator {
-	return &BlockchainIterator{currHash: bc.tip, db: bc.db}
+func (bc *Blockchain) Iterator() *Iterator {
+	return &Iterator{currHash: bc.tip, db: bc.db}
 }
 
 func (bc *Blockchain) UTXOs(addr string, amt int) (utxos []*transaction.TXOutputWraper, tot int, err error) {

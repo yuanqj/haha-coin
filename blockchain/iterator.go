@@ -4,11 +4,12 @@ import (
 	bolt "github.com/etcd-io/bbolt"
 )
 
-type BlockchainIterator struct {
+type Iterator struct {
 	currHash []byte
 	db       *bolt.DB
 }
-func (bci *BlockchainIterator) Next() (*Block, error) {
+
+func (bci *Iterator) Next() (*Block, error) {
 	if len(bci.currHash) <= 0 {
 		return nil, nil
 	}

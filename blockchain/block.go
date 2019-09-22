@@ -43,7 +43,6 @@ func (b *Block) Serialize() ([]byte, error) {
 	} else {
 		return buff.Bytes(), nil
 	}
-
 }
 
 func DeserializeBlock(hex []byte) (*Block, error) {
