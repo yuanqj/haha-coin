@@ -141,8 +141,8 @@ func (bc *Blockchain) Iterator() *Iterator {
 	return &Iterator{currHash: bc.tip, db: bc.db}
 }
 
-func (bc *Blockchain) UTXOs(addr string, amt int) (utxos []*transaction.TXOutputWraper, tot int, err error) {
-	stxos := make(map[transaction.TXOutputKey]bool)
+func (bc *Blockchain) UTXOs(addr string, amt int) (utxos []*transaction.OutputWraper, tot int, err error) {
+	stxos := make(map[transaction.OutputKey]bool)
 	bci := bc.Iterator()
 
 	addrObj, err := wallet.DecodeAddr(addr)
@@ -168,9 +168,9 @@ Blocks:
 				if !out.IsLockedWithKey(pubKeyHash) {
 					continue
 				}
-				key := transaction.TXOutputKey{TxID: *tx.ID, Idx: idx}
+				key := transaction.OutputKey{TxID: *tx.ID, Idx: idx}
 				if !stxos[key] { // Unspent
-					utxo := &transaction.TXOutputWraper{Key: &key, Output: out}
+					utxo := &transaction.OutputWraper{Key: &key, Output: out}
 					utxos = append(utxos, utxo)
 					tot += out.Val
 				}
@@ -191,7 +191,7 @@ Blocks:
 				if !use {
 					continue
 				}
-				key := transaction.TXOutputKey{TxID: *in.TxID, Idx: in.OutputIdx}
+				key := transaction.OutputKey{TxID: *in.TxID, Idx: in.OutputIdx}
 				stxos[key] = true // Spent
 			}
 		}

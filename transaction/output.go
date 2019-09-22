@@ -10,17 +10,17 @@ type Output struct {
 	PubKeyHash []byte
 }
 
-type TXOutputKey struct {
+type OutputKey struct {
 	TxID IDType
 	Idx  int
 }
 
-type TXOutputWraper struct {
-	Key    *TXOutputKey
+type OutputWraper struct {
+	Key    *OutputKey
 	Output *Output
 }
 
-func NewTXOutput(val int, addr string) (*Output, error) {
+func NewOutput(val int, addr string) (*Output, error) {
 	out := &Output{val, nil}
 	if err := out.Lock(addr); err != nil {
 		return nil, err

@@ -47,7 +47,7 @@ func (tx *Transaction) Hash() (*IDType, error) {
 
 func NewCoinbaseTransaction(to string) (*Transaction, error) {
 	txIn := &Input{OutputIdx: -1, Signature: nil, PubKey: []byte("Reward")}
-	txOut, err := NewTXOutput(subsidy, to)
+	txOut, err := NewOutput(subsidy, to)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +60,7 @@ func NewCoinbaseTransaction(to string) (*Transaction, error) {
 	}
 }
 
-func NewUTXOTransaction(srcWallet *wallet.Wallet, dstAddr string, amt int, utxos []*TXOutputWraper) (tx *Transaction, err error) {
+func NewUTXOTransaction(srcWallet *wallet.Wallet, dstAddr string, amt int, utxos []*OutputWraper) (tx *Transaction, err error) {
 	tot := 0
 	for _, utxo := range utxos {
 		tot += utxo.Output.Val
@@ -78,11 +78,11 @@ func NewUTXOTransaction(srcWallet *wallet.Wallet, dstAddr string, amt int, utxos
 
 	// Outputs
 	outs := make([]*Output, 2)
-	if outs[0], err = NewTXOutput(amt, dstAddr); err != nil {
+	if outs[0], err = NewOutput(amt, dstAddr); err != nil {
 		return
 	}
 	if left := tot - amt; left > 0 {
-		if outs[1], err = NewTXOutput(left, srcWallet.Addr); err != nil {
+		if outs[1], err = NewOutput(left, srcWallet.Addr); err != nil {
 			return
 		}
 	} else {
@@ -180,23 +180,18 @@ func (tx *Transaction) Verify(prevTXs []*Transaction) (bool, error) {
 
 func (tx *Transaction) String() string {
 	var lines []string
-
 	lines = append(lines, fmt.Sprintf("--- Transaction %x:", tx.ID))
-
 	for i, in := range tx.Inputs {
-
-		lines = append(lines, fmt.Sprintf("     Input %d:", i))
-		lines = append(lines, fmt.Sprintf("       TXID:      %x", in.TxID))
-		lines = append(lines, fmt.Sprintf("       Output:       %d", in.OutputIdx))
+		lines = append(lines, fmt.Sprintf("       Input %d:", i))
+		lines = append(lines, fmt.Sprintf("       TxID: %x", in.TxID))
+		lines = append(lines, fmt.Sprintf("       Output: %d", in.OutputIdx))
 		lines = append(lines, fmt.Sprintf("       Signature: %x", in.Signature))
-		lines = append(lines, fmt.Sprintf("       PubKey:    %x", in.PubKey))
+		lines = append(lines, fmt.Sprintf("       PubKey: %x", in.PubKey))
 	}
-
 	for i, out := range tx.Outputs {
-		lines = append(lines, fmt.Sprintf("     Output %d:", i))
-		lines = append(lines, fmt.Sprintf("       Value:  %d", out.Val))
+		lines = append(lines, fmt.Sprintf("       Output %d:", i))
+		lines = append(lines, fmt.Sprintf("       Value: %d", out.Val))
 		lines = append(lines, fmt.Sprintf("       Script: %x", out.PubKeyHash))
 	}
-
 	return strings.Join(lines, "\n")
 }
