@@ -25,10 +25,18 @@ func show() {
 			break
 		}
 
-		fmt.Printf("PrevHash: %x\n", block.PrevBlockHash)
+		for i := 0; i < 31; i++ {
+			fmt.Printf(">")
+		}
+		fmt.Printf(" Block\n")
 		fmt.Printf("Hash: %x\n", block.Hash)
+		fmt.Printf("PrevHash: %x\n", block.PrevBlockHash)
 		pow := blockchain.NewPoW(block)
 		fmt.Printf("PoW: %s\n", strconv.FormatBool(pow.Validate()))
+		fmt.Printf("Trasactions: \n")
+		for _, tx := range block.Transactions {
+			fmt.Println(tx.String())
+		}
 		fmt.Println()
 	}
 }
