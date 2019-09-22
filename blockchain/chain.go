@@ -164,13 +164,13 @@ Blocks:
 
 		for _, tx := range block.Transactions {
 			// Outputs
-			for idx, out := range tx.Outs {
+			for idx, out := range tx.Outputs {
 				if !out.IsLockedWithKey(pubKeyHash) {
 					continue
 				}
 				key := transaction.TXOutputKey{TxID: *tx.ID, Idx: idx}
 				if !stxos[key] { // Unspent
-					utxo := &transaction.TXOutputWraper{Key: &key, Out: out}
+					utxo := &transaction.TXOutputWraper{Key: &key, Output: out}
 					utxos = append(utxos, utxo)
 					tot += out.Val
 				}
@@ -183,7 +183,7 @@ Blocks:
 			if tx.IsCoinbase() {
 				continue
 			}
-			for _, in := range tx.Ins {
+			for _, in := range tx.Inputs {
 				use, err := in.UsesKey(pubKeyHash)
 				if err != nil {
 					return nil, 0, err
@@ -191,7 +191,7 @@ Blocks:
 				if !use {
 					continue
 				}
-				key := transaction.TXOutputKey{TxID: *in.TxID, Idx: in.OutIdx}
+				key := transaction.TXOutputKey{TxID: *in.TxID, Idx: in.OutputIdx}
 				stxos[key] = true // Spent
 			}
 		}
@@ -199,7 +199,7 @@ Blocks:
 	return
 }
 
-func (bc *Blockchain) FindTransaction(ID *transaction.TxIDType) (tx *transaction.Transaction, err error) {
+func (bc *Blockchain) FindTransaction(ID *transaction.IDType) (tx *transaction.Transaction, err error) {
 	bci := bc.Iterator()
 	for {
 		block, errBlock := bci.Next()
@@ -221,8 +221,8 @@ func (bc *Blockchain) FindTransaction(ID *transaction.TxIDType) (tx *transaction
 }
 
 func (bc *Blockchain) SignTransaction(tx *transaction.Transaction, prv *ecdsa.PrivateKey) (err error) {
-	prevTXs := make([]*transaction.Transaction, len(tx.Ins))
-	for i, in := range tx.Ins {
+	prevTXs := make([]*transaction.Transaction, len(tx.Inputs))
+	for i, in := range tx.Inputs {
 		if prevTXs[i], err = bc.FindTransaction(in.TxID); err != nil {
 			return
 		}
@@ -232,8 +232,8 @@ func (bc *Blockchain) SignTransaction(tx *transaction.Transaction, prv *ecdsa.Pr
 }
 
 func (bc *Blockchain) VerifyTransaction(tx *transaction.Transaction) (valid bool, err error) {
-	prevTXs := make([]*transaction.Transaction, len(tx.Ins))
-	for i, in := range tx.Ins {
+	prevTXs := make([]*transaction.Transaction, len(tx.Inputs))
+	for i, in := range tx.Inputs {
 		if prevTXs[i], err = bc.FindTransaction(in.TxID); err != nil {
 			return
 		}

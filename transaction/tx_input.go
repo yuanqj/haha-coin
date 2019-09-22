@@ -5,14 +5,14 @@ import (
 	"github.com/yuanqj/haha-coin/wallet"
 )
 
-type TXInput struct {
-	TxID      *TxIDType
-	OutIdx    int
+type Input struct {
+	TxID      *IDType
+	OutputIdx int
 	Signature []byte
 	PubKey    []byte
 }
 
-func (in *TXInput) UsesKey(pubKeyHash []byte) (bool, error) {
+func (in *Input) UsesKey(pubKeyHash []byte) (bool, error) {
 	lockingHash, err := wallet.HashPubKey(in.PubKey)
 	if err != nil {
 		return false, err
